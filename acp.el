@@ -573,6 +573,26 @@ See https://agentclientprotocol.com/rfds/session-resume."
                 (cwd . ,(directory-file-name (expand-file-name cwd)))
                 (mcpServers . ,(or mcp-servers []))))))
 
+(cl-defun acp-make-session-fork-request (&key session-id cwd mcp-servers)
+  "Instantiate a \"session/fork\" request.
+
+SESSION-ID is the ID of the session to fork from.
+CWD is the current working directory for the forked session.
+MCP-SERVERS is an optional list of MCP servers to use.
+
+This creates an independent session branched from an existing one.
+Only available if the agent advertises the `session.fork' capability.
+
+Note: This is an unstable ACP feature."
+  (unless session-id
+    (error ":session-id is required"))
+  (unless cwd
+    (error ":cwd is required"))
+  `((:method . "session/fork")
+    (:params . ((sessionId . ,session-id)
+                (cwd . ,(directory-file-name (expand-file-name cwd)))
+                (mcpServers . ,(or mcp-servers []))))))
+
 (cl-defun acp-make-session-list-request (&key cwd)
   "Instantiate a \"session/list\" request.
 
